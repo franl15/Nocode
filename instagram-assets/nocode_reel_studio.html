@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NoCode — Estudio 2D de Mascota N-01 &amp; Creador de Reels</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased m-0 p-0">
+  <div class="max-w-6xl mx-auto px-5 py-6 space-y-6">
+
+    <!-- Header -->
+    <header class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div>
+        <div class="text-xs font-mono uppercase tracking-widest text-[var(--muted-foreground)]">
+          NOCODE // N-01 2D VECTOR &amp; REEL GENERATOR
+        </div>
+        <h1 class="text-xl font-bold mt-1">Mascota N-01 en 2D (100% consistente) + Creador de Reels</h1>
+        <p class="text-xs text-[var(--muted-foreground)] mt-1">
+          Diseño vectorial limpio que nunca se deforma al animarse. Cambia su expresión, descárgalo en PNG para CapCut/Instagram o graba y descarga tus 3 Reels animados (9:16) directo aquí.
+        </p>
+      </div>
+      <div class="flex flex-wrap gap-2">
+        <button id="btn-dl-mascot" class="px-3.5 py-2 rounded-xl border border-[var(--border)] bg-[var(--background)] hover:border-[var(--primary)] text-xs font-bold cursor-pointer">
+          Descargar N-01 (PNG 1080px)
+        </button>
+        <button id="btn-record-reel" class="px-4 py-2 rounded-xl bg-[var(--foreground)] text-[var(--background)] text-xs font-bold cursor-pointer hover:opacity-90">
+          ● Grabar y Descargar Reel (12s)
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Studio Layout -->
+    <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+
+      <!-- Left: 9:16 Live Animated Reel Stage -->
+      <div class="lg:col-span-5 flex flex-col items-center gap-3">
+        <div class="w-full max-w-[330px] rounded-3xl overflow-hidden border-2 border-[var(--border)] shadow-2xl bg-[#060D21] relative">
+          <canvas id="reel-canvas" width="1080" height="1920" class="w-full aspect-[9/16] block"></canvas>
+          <div id="rec-badge" class="hidden absolute top-3 left-3 px-2.5 py-1 rounded-full bg-red-600 text-white text-[11px] font-mono font-bold tracking-wider">
+            ● REC 00:00
+          </div>
+        </div>
+        <div class="flex items-center gap-2">
+          <button id="btn-replay" class="px-3.5 py-1.5 rounded-lg border border-[var(--border)] bg-[var(--card)] text-xs font-semibold cursor-pointer hover:border-[var(--primary)]">
+            ↻ Repetir animación
+          </button>
+          <span id="status-text" class="text-xs text-[var(--muted-foreground)]">Vista previa en vivo (60 fps)</span>
+        </div>
+      </div>
+
+      <!-- Right: Controls (Reel Presets + 2D Expressions + Custom Text) -->
+      <div class="lg:col-span-7 space-y-5">
+
+        <!-- 1. Select Reel Template -->
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 space-y-3">
+          <h2 class="text-sm font-bold uppercase tracking-wider">1. Elige el Reel a producir</h2>
+          <div id="reel-presets" class="grid grid-cols-1 sm:grid-cols-3 gap-3"></div>
+        </div>
+
+        <!-- 2. N-01 2D Expressions -->
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 space-y-3">
+          <div class="flex items-center justify-between">
+            <h2 class="text-sm font-bold uppercase tracking-wider">2. Expresión de N-01 (2D Vectorial)</h2>
+            <span class="text-xs text-[var(--muted-foreground)]">Misma geometría siempre, cero deformación</span>
+          </div>
+          <div id="mood-selector" class="flex flex-wrap gap-2"></div>
+        </div>
+
+        <!-- 3. Edit Reel Scenes Live -->
+        <div class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 space-y-3">
+          <h2 class="text-sm font-bold uppercase tracking-wider">3. Personaliza los textos del Reel</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+            <div>
+              <label class="block text-[var(--muted-foreground)] mb-1">Escena 1 — Gancho (0–4s)</label>
+              <input id="inp-hook" type="text" class="w-full px-3 py-2 rounded-lg bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)] font-semibold" />
+            </div>
+            <div>
+              <label class="block text-[var(--muted-foreground)] mb-1">Escena 2 — Solución (4–8s)</label>
+              <input id="inp-mid" type="text" class="w-full px-3 py-2 rounded-lg bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)] font-semibold" />
+            </div>
+            <div>
+              <label class="block text-[var(--muted-foreground)] mb-1">Escena 3 — Cierre / CTA (8–12s)</label>
+              <input id="inp-cta" type="text" class="w-full px-3 py-2 rounded-lg bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)] font-semibold" />
+            </div>
+            <div>
+              <label class="block text-[var(--muted-foreground)] mb-1">Etiqueta superior</label>
+              <input id="inp-tag" type="text" class="w-full px-3 py-2 rounded-lg bg-[var(--background)] border border-[var(--border)] text-[var(--foreground)] font-mono" />
+            </div>
+          </div>
+          <p class="text-xs text-[var(--muted-foreground)] pt-1">
+            Tip: Al hacer clic en <strong>"Grabar y Descargar Reel (12s)"</strong>, se exporta un archivo de video vertical HD listo para subir a Instagram Reels o añadirle música en tendencia desde la app.
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const REELS = [
+      {
+        id: 'whatsapp-ia',
+        name: 'Reel 01 · WhatsApp IA',
+        tag: 'N-01 // AUTOMATIZACIÓN 24/7',
+        hook: '¿SIGUES RESPONDIENDO WHATSAPP A MANO?',
+        mid: 'N-01 RESPONDE EN 3 SEG Y AGENDA CITAS SOLO',
+        cta: 'ESCRÍBENOS EN EL LINK EN BIO',
+        mood: 'happy',
+        stat: '+38 CITAS / SEMANA'
+      },
+      {
+        id: 'web-veloz',
+        name: 'Reel 02 · Web que Vende',
+        tag: 'NOCODE // DISEÑO WEB',
+        hook: 'POR ESTO TU WEB ACTUAL NO CONVIERTE',
+        mid: 'DISEÑO DE ALTO CONTRASTE + CARGA EN 0.6s',
+        cta: 'COTIZA TU WEB POR WHATSAPP',
+        mood: 'coding',
+        stat: '3.2x MÁS LEADS'
+      },
+      {
+        id: 'excel-software',
+        name: 'Reel 03 · Adiós Excel',
+        tag: 'NOCODE // SOFTWARE A MEDIDA',
+        hook: 'SI COTIZAS EN EXCEL PIERDES HORAS',
+        mid: 'PANEL PROPIO + PDF EN 10 SEGUNDOS',
+        cta: 'AUTOMATIZA TU OPERACIÓN HOY',
+        mood: 'alert',
+        stat: '-42 HORAS / MES'
+      }
+    ];
+
+    const MOODS = [
+      { id: 'happy', label: 'Feliz (^ ^)' },
+      { id: 'coding', label: 'Modo Dev (< >)' },
+      { id: 'alert', label: 'Alerta (! !)' },
+      { id: 'wink', label: 'Guiño (^ -)' },
+      { id: 'talking', label: 'Hablando (Onda IA)' }
+    ];
+
+    let state = {
+      reelId: 'whatsapp-ia',
+      mood: 'happy',
+      tag: REELS[0].tag,
+      hook: REELS[0].hook,
+      mid: REELS[0].mid,
+      cta: REELS[0].cta,
+      stat: REELS[0].stat,
+      startTime: performance.now(),
+      recording: false
+    };
+
+    const canvas = document.getElementById('reel-canvas');
+    const ctx = canvas.getContext('2d');
+
+    function roundRectPath(c, x, y, w, h, r) {
+      c.beginPath();
+      c.moveTo(x + r, y);
+      c.lineTo(x + w - r, y);
+      c.quadraticCurveTo(x + w, y, x + w, y + r);
+      c.lineTo(x + w, y + h - r);
+      c.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
+      c.lineTo(x + r, y + h);
+      c.quadraticCurveTo(x, y + h, x, y + h - r);
+      c.lineTo(x, y + r);
+      c.quadraticCurveTo(x, y, x + r, y);
+      c.closePath();
+    }
+
+    // 100% CONSISTENT 2D VECTOR MASCOT N-01
+    function drawN01(c, cx, cy, scale, t, mood) {
+      c.save();
+      const floatY = Math.sin(t * 2.6) * 18;
+      const tilt = Math.sin(t * 1.4) * 0.04;
+      c.translate(cx, cy + floatY);
+      c.rotate(tilt);
+      c.scale(scale, scale);
+
+      // Soft floor shadow
+      c.fillStyle = 'rgba(0,0,0,0.45)';
+      c.beginPath();
+      c.ellipse(0, 235 - floatY * 0.4, 110, 22, 0, 0, Math.PI * 2);
+      c.fill();
+
+      // Back orbital ring
+      c.save();
+      c.rotate(-0.22);
+      c.strokeStyle = 'rgba(126,162,219,0.45)';
+      c.lineWidth = 6;
+      c.beginPath();
+      c.ellipse(0, 35, 215, 58, 0, Math.PI, Math.PI * 2);
+      c.stroke();
+      c.restore();
+
+      // Left & Right Floating Arms (2D flat geometric)
+      const armWave = Math.sin(t * 3.2) * 10;
+      // Left arm
+      c.fillStyle = '#0D1528';
+      c.strokeStyle = '#F2F0EB';
+      c.lineWidth = 6;
+      roundRectPath(c, -155, 25 + armWave, 42, 92, 21);
+      c.fill();
+      c.stroke();
+
+      // Right arm
+      roundRectPath(c, 113, 25 - armWave, 42, 92, 21);
+      c.fill();
+      c.stroke();
+
+      // Torso (Pearl White + Matte Black center stripe)
+      c.fillStyle = '#F2F0EB';
+      c.strokeStyle = '#000000';
+      c.lineWidth = 8;
+      roundRectPath(c, -96, 15, 192, 160, 64);
+      c.fill();
+      c.stroke();
+
+      // Black chest core plate
+      c.fillStyle = '#050811';
+      roundRectPath(c, -46, 48, 92, 122, 26);
+      c.fill();
+
+      // Glowing power bar on chest
+      c.fillStyle = '#7EA2DB';
+      roundRectPath(c, -22, 74, 44, 10, 5);
+      c.fill();
+
+      // Head Shell (Matte Obsidian + Crisp Pearl Outline)
+      c.fillStyle = '#0B1222';
+      c.strokeStyle = '#F2F0EB';
+      c.lineWidth = 8;
+      roundRectPath(c, -135, -165, 270, 200, 92);
+      c.fill();
+      c.stroke();
+
+      // Side ear pods
+      c.fillStyle = '#F2F0EB';
+      c.strokeStyle = '#000000';
+      c.lineWidth = 6;
+      roundRectPath(c, -154, -95, 24, 64, 12);
+      c.fill();
+      c.stroke();
+      roundRectPath(c, 130, -95, 24, 64, 12);
+      c.fill();
+      c.stroke();
+
+      // Pure Black Glass Visor
+      c.fillStyle = '#000000';
+      c.strokeStyle = 'rgba(126,162,219,0.5)';
+      c.lineWidth = 4;
+      roundRectPath(c, -104, -132, 208, 138, 60);
+      c.fill();
+      c.stroke();
+
+      // Subtle visor shine
+      c.fillStyle = 'rgba(255,255,255,0.08)';
+      c.beginPath();
+      c.ellipse(-45, -108, 42, 14, -0.25, 0, Math.PI * 2);
+      c.fill();
+
+      // Eyes (Strict 2D vector, periodic natural blink)
+      const blink = (t % 3.6) > 3.46;
+      c.strokeStyle = '#7EA2DB';
+      c.fillStyle = '#7EA2DB';
+      c.lineWidth = 14;
+      c.lineCap = 'round';
+      c.lineJoin = 'round';
+
+      if (blink) {
+        c.beginPath();
+        c.moveTo(-62, -62); c.lineTo(-26, -62);
+        c.moveTo(26, -62); c.lineTo(62, -62);
+        c.stroke();
+      } else if (mood === 'happy') {
+        // Signature chevron ^ ^ eyes
+        c.beginPath();
+        c.moveTo(-64, -52); c.lineTo(-44, -76); c.lineTo(-24, -52);
+        c.moveTo(24, -52); c.lineTo(44, -76); c.lineTo(64, -52);
+        c.stroke();
+      } else if (mood === 'coding') {
+        // Code brackets < >
+        c.beginPath();
+        c.moveTo(-28, -80); c.lineTo(-56, -62); c.lineTo(-28, -44);
+        c.moveTo(28, -80); c.lineTo(56, -62); c.lineTo(28, -44);
+        c.stroke();
+      } else if (mood === 'alert') {
+        // High-focus glowing bars ! !
+        roundRectPath(c, -56, -88, 22, 46, 8); c.fill();
+        roundRectPath(c, 34, -88, 22, 46, 8); c.fill();
+      } else if (mood === 'wink') {
+        c.beginPath();
+        c.moveTo(-64, -52); c.lineTo(-44, -76); c.lineTo(-24, -52);
+        c.moveTo(26, -62); c.lineTo(62, -62);
+        c.stroke();
+      } else if (mood === 'talking') {
+        // Expressive eyes + animated voice equalizer
+        c.beginPath();
+        c.arc(-44, -76, 12, 0, Math.PI * 2);
+        c.arc(44, -76, 12, 0, Math.PI * 2);
+        c.fill();
+        for (let i = -2; i <= 2; i++) {
+          const barH = 12 + Math.abs(Math.sin(t * 10 + i * 1.1)) * 22;
+          roundRectPath(c, i * 18 - 4, -36 - barH / 2, 8, barH, 4);
+          c.fill();
+        }
+      }
+
+      // Front orbital ring + orbiting modular cube
+      c.save();
+      c.rotate(-0.22);
+      c.strokeStyle = '#F2F0EB';
+      c.lineWidth = 5;
+      c.beginPath();
+      c.ellipse(0, 35, 215, 58, 0, 0, Math.PI);
+      c.stroke();
+
+      const orbAngle = t * 1.4;
+      const ox = Math.cos(orbAngle) * 215;
+      const oy = 35 + Math.sin(orbAngle) * 58;
+      if (Math.sin(orbAngle) >= -0.2) {
+        c.fillStyle = '#000000';
+        c.strokeStyle = '#7EA2DB';
+        c.lineWidth = 4;
+        c.fillRect(ox - 16, oy - 16, 32, 32);
+        c.strokeRect(ox - 16, oy - 16, 32, 32);
+      }
+      c.restore();
+
+      c.restore();
+    }
+
+    function wrapLines(c, text, maxWidth) {
+      const words = (text || '').split(' ');
+      const lines = [];
+      let line = '';
+      for (const w of words) {
+        const test = line ? `${line} ${w}` : w;
+        if (c.measureText(test).width > maxWidth && line) {
+          lines.push(line);
+          line = w;
+        } else {
+          line = test;
+        }
+      }
+      if (line) lines.push(line);
+      return lines;
+    }
+
+    function renderFrame(now) {
+      const elapsed = ((now - state.startTime) / 1000) % 12;
+      const w = canvas.width;
+      const h = canvas.height;
+
+      // 1. Background #060D21
+      ctx.fillStyle = '#060D21';
+      ctx.fillRect(0, 0, w, h);
+
+      // Subtle architectural grid
+      ctx.strokeStyle = 'rgba(242,240,235,0.06)';
+      ctx.lineWidth = 2;
+      for (let x = 180; x < w; x += 180) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+      }
+      for (let y = 180; y < h; y += 180) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+      }
+
+      // Soft blue center glow
+      const glow = ctx.createRadialGradient(w/2, h*0.44, 60, w/2, h*0.44, 540);
+      glow.addColorStop(0, 'rgba(126,162,219,0.26)');
+      glow.addColorStop(1, 'rgba(6,13,33,0)');
+      ctx.fillStyle = glow;
+      ctx.fillRect(0, 0, w, h);
+
+      // 2. Top Brand Tag
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(90, 140, 560, 68);
+      ctx.strokeStyle = 'rgba(242,240,235,0.3)';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(90, 140, 560, 68);
+      ctx.fillStyle = '#7EA2DB';
+      ctx.font = '700 28px monospace';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(state.tag, 120, 175);
+
+      // 3. Draw 2D Vector Mascot N-01 (consistent every single frame)
+      const sceneMood = elapsed >= 4 && elapsed < 8 ? 'talking' : state.mood;
+      drawN01(ctx, w / 2, h * 0.42, 1.38, elapsed, sceneMood);
+
+      // 4. Scene Text (0-4s Hook, 4-8s Mid, 8-12s CTA)
+      let activeText = state.hook;
+      let sceneLocal = elapsed;
+      if (elapsed >= 4 && elapsed < 8) {
+        activeText = state.mid;
+        sceneLocal = elapsed - 4;
+      } else if (elapsed >= 8) {
+        activeText = state.cta;
+        sceneLocal = elapsed - 8;
+      }
+
+      const slideProgress = Math.min(sceneLocal / 0.35, 1);
+      const easeOut = 1 - Math.pow(1 - slideProgress, 3);
+      const yOffset = (1 - easeOut) * 60;
+
+      ctx.save();
+      ctx.globalAlpha = easeOut;
+      ctx.font = '900 84px system-ui, -apple-system, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+
+      const lines = wrapLines(ctx, activeText.toUpperCase(), w - 180);
+      const baseTextY = 1230 + yOffset;
+      lines.forEach((ln, idx) => {
+        const y = baseTextY + idx * 108;
+        if (idx === 1 || lines.length === 1) {
+          const tw = ctx.measureText(ln).width;
+          ctx.fillStyle = '#000000';
+          ctx.fillRect(w/2 - tw/2 - 36, y - 52, tw + 72, 102);
+          ctx.strokeStyle = '#7EA2DB';
+          ctx.lineWidth = 4;
+          ctx.strokeRect(w/2 - tw/2 - 36, y - 52, tw + 72, 102);
+          ctx.fillStyle = '#FFFFFF';
+        } else {
+          ctx.fillStyle = '#F2F0EB';
+        }
+        ctx.fillText(ln, w / 2, y);
+      });
+      ctx.restore();
+
+      // 5. Bottom Metric & Progress Bar
+      ctx.fillStyle = '#F2F0EB';
+      ctx.fillRect(90, 1620, w - 180, 92);
+      ctx.fillStyle = '#000000';
+      ctx.font = '800 34px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText(`NOCODE  ·  ${state.stat}`, w / 2, 1668);
+
+      // Timeline progress bar
+      ctx.fillStyle = 'rgba(242,240,235,0.18)';
+      ctx.fillRect(90, 1765, w - 180, 10);
+      ctx.fillStyle = '#7EA2DB';
+      ctx.fillRect(90, 1765, ((w - 180) * elapsed) / 12, 10);
+
+      requestAnimationFrame(renderFrame);
+    }
+
+    function syncInputs() {
+      document.getElementById('inp-tag').value = state.tag;
+      document.getElementById('inp-hook').value = state.hook;
+      document.getElementById('inp-mid').value = state.mid;
+      document.getElementById('inp-cta').value = state.cta;
+    }
+
+    function renderControls() {
+      const presetsEl = document.getElementById('reel-presets');
+      presetsEl.innerHTML = REELS.map(r => `
+        <button onclick="selectReel('${r.id}')" class="text-left p-3 rounded-xl border transition-all cursor-pointer ${
+          state.reelId === r.id
+            ? 'border-[var(--primary)] bg-[var(--background)] ring-2 ring-[var(--primary)]/30'
+            : 'border-[var(--border)] bg-[var(--background)]/50 hover:border-[var(--muted-foreground)]'
+        }">
+          <div class="text-xs font-bold">${r.name}</div>
+          <div class="text-[11px] text-[var(--muted-foreground)] mt-0.5">${r.stat}</div>
+        </button>
+      `).join('');
+
+      const moodEl = document.getElementById('mood-selector');
+      moodEl.innerHTML = MOODS.map(m => `
+        <button onclick="selectMood('${m.id}')" class="px-3 py-1.5 rounded-lg border text-xs font-semibold cursor-pointer ${
+          state.mood === m.id
+            ? 'bg-[var(--foreground)] text-[var(--background)] border-[var(--foreground)]'
+            : 'bg-[var(--background)] text-[var(--foreground)] border-[var(--border)] hover:border-[var(--primary)]'
+        }">${m.label}</button>
+      `).join('');
+    }
+
+    window.selectReel = (id) => {
+      const r = REELS.find(x => x.id === id);
+      if (!r) return;
+      state.reelId = r.id;
+      state.tag = r.tag;
+      state.hook = r.hook;
+      state.mid = r.mid;
+      state.cta = r.cta;
+      state.mood = r.mood;
+      state.stat = r.stat;
+      state.startTime = performance.now();
+      syncInputs();
+      renderControls();
+    };
+
+    window.selectMood = (m) => {
+      state.mood = m;
+      renderControls();
+    };
+
+    ['inp-tag', 'inp-hook', 'inp-mid', 'inp-cta'].forEach(id => {
+      document.getElementById(id).addEventListener('input', e => {
+        const key = id.replace('inp-', '');
+        state[key] = e.target.value;
+      });
+    });
+
+    document.getElementById('btn-replay').onclick = () => {
+      state.startTime = performance.now();
+    };
+
+    // Export standalone 1080x1080 2D Mascot PNG
+    document.getElementById('btn-dl-mascot').onclick = () => {
+      const c = document.createElement('canvas');
+      c.width = 1080; c.height = 1080;
+      const mc = c.getContext('2d');
+      mc.fillStyle = '#060D21';
+      mc.fillRect(0, 0, 1080, 1080);
+      drawN01(mc, 540, 540, 1.85, 0.4, state.mood);
+      const a = document.createElement('a');
+      a.download = `nocode-n01-2d-${state.mood}.png`;
+      a.href = c.toDataURL('image/png');
+      a.click();
+    };
+
+    // Record real 12-second 1080x1920 Video (.webm) directly from Canvas!
+    document.getElementById('btn-record-reel').onclick = () => {
+      if (state.recording) return;
+      if (!canvas.captureStream || typeof MediaRecorder === 'undefined') {
+        document.getElementById('status-text').textContent = 'Tu navegador no soporta grabación directa de canvas.';
+        return;
+      }
+
+      state.recording = true;
+      state.startTime = performance.now();
+      const stream = canvas.captureStream(30);
+      const mime = MediaRecorder.isTypeSupported('video/webm;codecs=vp9') ? 'video/webm;codecs=vp9' : 'video/webm';
+      const recorder = new MediaRecorder(stream, { mimeType: mime, videoBitsPerSecond: 6000000 });
+      const chunks = [];
+
+      const badge = document.getElementById('rec-badge');
+      const status = document.getElementById('status-text');
+      badge.classList.remove('hidden');
+      status.textContent = 'Grabando Reel HD (12 segundos)...';
+
+      let sec = 0;
+      const timer = setInterval(() => {
+        sec++;
+        badge.textContent = `● REC 00:${String(sec).padStart(2, '0')}`;
+      }, 1000);
+
+      recorder.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+      recorder.onstop = () => {
+        clearInterval(timer);
+        badge.classList.add('hidden');
+        state.recording = false;
+        const blob = new Blob(chunks, { type: mime });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `nocode-${state.reelId}-reel.webm`;
+        a.click();
+        status.textContent = 'Reel descargado listo para subir.';
+      };
+
+      recorder.start();
+      setTimeout(() => recorder.stop(), 12000);
+    };
+
+    syncInputs();
+    renderControls();
+    requestAnimationFrame(renderFrame);
+  </script>
+</body>
+</html>

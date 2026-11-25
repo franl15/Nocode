@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NoCode — Exportador de Portadas &amp; Highlights Instagram</title>
+  <script src="https://www.gstatic.com/antigravity/web/dev/tailwindcss.min.js"></script>
+</head>
+<body class="bg-[var(--background)] text-[var(--foreground)] antialiased m-0 p-0">
+  <div class="max-w-5xl mx-auto px-5 py-6 space-y-6">
+    <header class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div>
+        <div class="text-xs font-mono uppercase tracking-widest text-[var(--muted-foreground)]">
+          NOCODE // INSTAGRAM ASSET STUDIO
+        </div>
+        <h1 class="text-xl font-bold mt-1">Descarga tus Portadas de Historias Destacadas y Reels</h1>
+        <p class="text-xs text-[var(--muted-foreground)] mt-1">
+          Renderizados en resolución real de Instagram (1080×1080 para Destacadas y 1080×1920 para Portadas de Reels) con tu paleta exacta (#060D21 · #000000 · #F2F0EB · #7EA2DB).
+        </p>
+      </div>
+      <button
+        id="download-all-hl"
+        class="px-4 py-2.5 rounded-xl bg-[var(--foreground)] text-[var(--background)] text-xs font-bold cursor-pointer shrink-0 hover:opacity-90"
+      >
+        Descargar 5 Destacadas (.png)
+      </button>
+    </header>
+
+    <!-- Highlights Section -->
+    <section class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-sm font-bold uppercase tracking-wider">1. Portadas de Historias Destacadas (1080×1080)</h2>
+        <span class="text-xs text-[var(--muted-foreground)]">Haz clic en cualquiera para descargar PNG</span>
+      </div>
+      <div id="highlights-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4"></div>
+    </section>
+
+    <!-- Reel Covers Section -->
+    <section class="bg-[var(--card)] border border-[var(--border)] rounded-2xl p-5 space-y-4">
+      <div class="flex items-center justify-between">
+        <h2 class="text-sm font-bold uppercase tracking-wider">2. Portadas de Reels 9:16 (1080×1920)</h2>
+        <span class="text-xs text-[var(--muted-foreground)]">Listas para subir como miniatura en Instagram</span>
+      </div>
+      <div id="reels-grid" class="grid grid-cols-1 sm:grid-cols-3 gap-5"></div>
+    </section>
+  </div>
+
+  <script>
+    const HIGHLIGHTS = [
+      { id: 'servicios', code: '01', label: 'SERVICIOS', sub: 'WEB · IA · DEV' },
+      { id: 'antes-despues', code: '02', label: 'ANTES/DESP', sub: 'RESULTADOS' },
+      { id: 'n01-ia', code: '03', label: 'N-01 IA', sub: 'WHATSAPP 24/7' },
+      { id: 'proceso', code: '04', label: 'PROCESO', sub: '4 PASOS' },
+      { id: 'cotizar', code: '05', label: 'COTIZAR', sub: 'WHATSAPP →' }
+    ];
+
+    const REEL_COVERS = [
+      {
+        id: 'reel-01-whatsapp',
+        tag: 'REEL // 01',
+        title: ['¿SIGUES', 'RESPONDIENDO', 'A MANO?'],
+        highlight: 'WHATSAPP IA 24/7',
+        footer: 'NOCODE // N-01'
+      },
+      {
+        id: 'reel-02-web',
+        tag: 'REEL // 02',
+        title: ['POR ESTO', 'TU WEB', 'NO VENDE.'],
+        highlight: 'ANTES VS. DESPUÉS',
+        footer: 'CARGA EN 0.6s'
+      },
+      {
+        id: 'reel-03-excel',
+        tag: 'REEL // 03',
+        title: ['DE EXCEL', 'A SOFTWARE', 'EN 10 SEG.'],
+        highlight: 'SISTEMAS A MEDIDA',
+        footer: '-40H AL MES'
+      }
+    ];
+
+    function drawHighlightCanvas(item, size = 1080) {
+      const c = document.createElement('canvas');
+      c.width = size;
+      c.height = size;
+      const ctx = c.getContext('2d');
+
+      // Deep Midnight Blue background
+      ctx.fillStyle = '#060D21';
+      ctx.fillRect(0, 0, size, size);
+
+      // Subtle architectural radial glow
+      const grad = ctx.createRadialGradient(size/2, size/2, size*0.05, size/2, size/2, size*0.52);
+      grad.addColorStop(0, 'rgba(126,162,219,0.22)');
+      grad.addColorStop(1, 'rgba(6,13,33,0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, size, size);
+
+      // Subtle grid lines
+      ctx.strokeStyle = 'rgba(242,240,235,0.06)';
+      ctx.lineWidth = 2;
+      const step = size / 6;
+      for (let i = 1; i < 6; i++) {
+        ctx.beginPath(); ctx.moveTo(i * step, 0); ctx.lineTo(i * step, size); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, i * step); ctx.lineTo(size, i * step); ctx.stroke();
+      }
+
+      // Outer precision ring
+      ctx.strokeStyle = 'rgba(242,240,235,0.22)';
+      ctx.lineWidth = 4;
+      ctx.beginPath();
+      ctx.arc(size/2, size/2, size*0.38, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Inner black architectural frame
+      const boxW = size * 0.54;
+      const boxH = size * 0.24;
+      ctx.fillStyle = '#000000';
+      ctx.fillRect((size - boxW)/2, (size - boxH)/2, boxW, boxH);
+      ctx.strokeStyle = 'rgba(126,162,219,0.6)';
+      ctx.lineWidth = 3;
+      ctx.strokeRect((size - boxW)/2, (size - boxH)/2, boxW, boxH);
+
+      // Index code above
+      ctx.fillStyle = '#7EA2DB';
+      ctx.font = `700 ${Math.round(size*0.045)}px monospace`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(`// ${item.code}`, size/2, size * 0.30);
+
+      // Main label
+      ctx.fillStyle = '#F2F0EB';
+      ctx.font = `900 ${Math.round(size*0.078)}px system-ui, -apple-system, sans-serif`;
+      ctx.fillText(item.label, size/2, size * 0.50);
+
+      // Sub label
+      ctx.fillStyle = 'rgba(242,240,235,0.65)';
+      ctx.font = `600 ${Math.round(size*0.032)}px monospace`;
+      ctx.fillText(item.sub, size/2, size * 0.70);
+
+      return c;
+    }
+
+    function drawReelCoverCanvas(item, w = 1080, h = 1920) {
+      const c = document.createElement('canvas');
+      c.width = w;
+      c.height = h;
+      const ctx = c.getContext('2d');
+
+      // Base
+      ctx.fillStyle = '#060D21';
+      ctx.fillRect(0, 0, w, h);
+
+      // Grid
+      ctx.strokeStyle = 'rgba(242,240,235,0.06)';
+      ctx.lineWidth = 2;
+      for (let x = 180; x < w; x += 180) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke();
+      }
+      for (let y = 180; y < h; y += 180) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke();
+      }
+
+      // Glow
+      const grad = ctx.createRadialGradient(w*0.5, h*0.48, 80, w*0.5, h*0.48, 620);
+      grad.addColorStop(0, 'rgba(126,162,219,0.28)');
+      grad.addColorStop(1, 'rgba(6,13,33,0)');
+      ctx.fillStyle = grad;
+      ctx.fillRect(0, 0, w, h);
+
+      // Top badge
+      ctx.fillStyle = '#000000';
+      ctx.fillRect(96, 260, 290, 68);
+      ctx.strokeStyle = 'rgba(242,240,235,0.35)';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(96, 260, 290, 68);
+      ctx.fillStyle = '#7EA2DB';
+      ctx.font = '700 32px monospace';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(item.tag, 128, 295);
+
+      // Giant Headline (centered in 1:1 safe zone for Instagram profile grid!)
+      ctx.fillStyle = '#F2F0EB';
+      ctx.font = '900 112px system-ui, -apple-system, sans-serif';
+      const startY = 740;
+      item.title.forEach((line, idx) => {
+        if (idx === 1) {
+          const metrics = ctx.measureText(line);
+          ctx.fillStyle = '#000000';
+          ctx.fillRect(80, startY + idx * 145 - 66, metrics.width + 64, 130);
+          ctx.strokeStyle = '#7EA2DB';
+          ctx.lineWidth = 4;
+          ctx.strokeRect(80, startY + idx * 145 - 66, metrics.width + 64, 130);
+          ctx.fillStyle = '#FFFFFF';
+          ctx.fillText(line, 112, startY + idx * 145);
+        } else {
+          ctx.fillStyle = '#F2F0EB';
+          ctx.fillText(line, 96, startY + idx * 145);
+        }
+      });
+
+      // Highlight Pill
+      ctx.fillStyle = '#F2F0EB';
+      ctx.fillRect(96, 1210, 560, 82);
+      ctx.fillStyle = '#000000';
+      ctx.font = '800 34px monospace';
+      ctx.fillText(item.highlight, 128, 1252);
+
+      // Footer bar
+      ctx.strokeStyle = 'rgba(242,240,235,0.22)';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(96, 1660); ctx.lineTo(w - 96, 1660); ctx.stroke();
+      ctx.fillStyle = 'rgba(242,240,235,0.75)';
+      ctx.font = '700 30px monospace';
+      ctx.fillText(item.footer, 96, 1720);
+      ctx.textAlign = 'right';
+      ctx.fillStyle = '#7EA2DB';
+      ctx.fillText('LINK EN BIO →', w - 96, 1720);
+
+      return c;
+    }
+
+    function downloadCanvas(canvas, filename) {
+      const a = document.createElement('a');
+      a.download = filename;
+      a.href = canvas.toDataURL('image/png');
+      a.click();
+    }
+
+    // Render Highlights
+    const hlGrid = document.getElementById('highlights-grid');
+    HIGHLIGHTS.forEach(item => {
+      const preview = drawHighlightCanvas(item, 400);
+      const wrap = document.createElement('button');
+      wrap.className = 'group flex flex-col items-center gap-2 p-3 rounded-xl border border-[var(--border)] bg-[var(--background)] hover:border-[var(--primary)] cursor-pointer transition-all';
+      const img = document.createElement('img');
+      img.src = preview.toDataURL('image/png');
+      img.alt = item.label;
+      img.className = 'w-24 h-24 rounded-full border border-[var(--border)] group-hover:scale-105 transition-transform';
+      const lbl = document.createElement('span');
+      lbl.className = 'text-xs font-bold';
+      lbl.textContent = item.label;
+      const dl = document.createElement('span');
+      dl.className = 'text-[11px] text-[var(--muted-foreground)]';
+      dl.textContent = 'Descargar PNG';
+      wrap.append(img, lbl, dl);
+      wrap.onclick = () => downloadCanvas(drawHighlightCanvas(item, 1080), `nocode-highlight-${item.id}.png`);
+      hlGrid.appendChild(wrap);
+    });
+
+    document.getElementById('download-all-hl').onclick = () => {
+      HIGHLIGHTS.forEach((item, idx) => {
+        setTimeout(() => {
+          downloadCanvas(drawHighlightCanvas(item, 1080), `nocode-highlight-${item.id}.png`);
+        }, idx * 250);
+      });
+    };
+
+    // Render Reel Covers
+    const reelsGrid = document.getElementById('reels-grid');
+    REEL_COVERS.forEach(item => {
+      const preview = drawReelCoverCanvas(item, 540, 960);
+      const card = document.createElement('div');
+      card.className = 'rounded-xl border border-[var(--border)] bg-[var(--background)] overflow-hidden flex flex-col';
+      const img = document.createElement('img');
+      img.src = preview.toDataURL('image/png');
+      img.alt = item.id;
+      img.className = 'w-full aspect-[9/16] object-cover';
+      const bar = document.createElement('div');
+      bar.className = 'p-3 flex items-center justify-between gap-2';
+      bar.innerHTML = `<span class="text-xs font-bold">${item.tag}</span>`;
+      const btn = document.createElement('button');
+      btn.className = 'px-3 py-1.5 rounded-lg bg-[var(--foreground)] text-[var(--background)] text-xs font-bold cursor-pointer hover:opacity-90';
+      btn.textContent = 'Descargar 1080×1920';
+      btn.onclick = () => downloadCanvas(drawReelCoverCanvas(item, 1080, 1920), `nocode-${item.id}.png`);
+      bar.appendChild(btn);
+      card.append(img, bar);
+      reelsGrid.appendChild(card);
+    });
+  </script>
+</body>
+</html>
