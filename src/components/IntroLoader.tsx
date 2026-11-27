@@ -6,19 +6,28 @@ const BRAND_LETTERS = ["N", "O", "C", "O", "D", "E"];
 
 export function IntroLoader() {
   const [progress, setProgress] = useState(0);
-  const [phase, setPhase] = useState<"loading" | "lifting" | "done">("loading");
+  const [phase, setPhase] = useState<"idle" | "loading" | "lifting" | "done">("idle");
 
   useEffect(() => {
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    const seen = sessionStorage.getItem("nocode_intro_seen") === "1";
+
+    if (reduced || seen) {
+      setPhase("done");
+      return;
+    }
+
+    sessionStorage.setItem("nocode_intro_seen", "1");
+    setPhase("loading");
     document.body.style.overflow = "hidden";
 
     const start = performance.now();
-    const duration = 1150;
+    const duration = 680; // Fast, crisp ~1s total experience so LCP stays snappy
     let frameId = 0;
 
     const tick = (now: number) => {
       const elapsed = now - start;
       const ratio = Math.min(elapsed / duration, 1);
-      // Smooth ease-out curve for the numeric counter
       const eased = 1 - Math.pow(1 - ratio, 3);
       setProgress(Math.round(eased * 100));
 
@@ -28,10 +37,10 @@ export function IntroLoader() {
         setTimeout(() => {
           setPhase("lifting");
           document.body.style.overflow = "";
-        }, 120);
+        }, 60);
         setTimeout(() => {
           setPhase("done");
-        }, 900);
+        }, 560);
       }
     };
 
@@ -43,16 +52,15 @@ export function IntroLoader() {
     };
   }, []);
 
-  if (phase === "done") return null;
+  if (phase === "idle" || phase === "done") return null;
 
   return (
     <div
       aria-hidden="true"
-      className={`fixed inset-0 z-[100] bg-[#030712] text-[#F2F0EB] flex flex-col justify-between p-6 sm:p-10 transition-transform duration-[780ms] ease-[cubic-bezier(0.76,0,0.24,1)] ${
+      className={`fixed inset-0 z-[100] bg-[#030712] text-[#F2F0EB] flex flex-col justify-between p-6 sm:p-10 transition-transform duration-500 ease-[cubic-bezier(0.76,0,0.24,1)] ${
         phase === "lifting" ? "-translate-y-full" : "translate-y-0"
       }`}
     >
-      {/* Subtle Architectural Grid Backdrop */}
       <div
         className="pointer-events-none absolute inset-0 opacity-[0.07]"
         style={{
@@ -62,47 +70,33 @@ export function IntroLoader() {
         }}
       />
 
-      {/* Deep Blue Glow */}
-      <div
-        className="pointer-events-none absolute inset-0 opacity-50"
-        style={{
-          background:
-            "radial-gradient(circle at 50% 50%, rgba(16,38,94,0.65) 0%, rgba(3,7,18,0) 65%)",
-        }}
-      />
-
-      {/* Top Metadata Row */}
-      <div className="relative z-10 flex items-center justify-between text-[11px] font-mono tracking-widest uppercase text-white/50">
+      <div className="relative z-10 flex items-center justify-between text-[11px] font-mono-tech tracking-widest uppercase text-white/55">
         <span>NOCODE // STUDIO</span>
         <span>EST. 2026</span>
       </div>
 
-      {/* Center Kinetic Wordmark */}
-      <div className="relative z-10 flex flex-col items-center justify-center gap-5">
-        <div className="w-12 h-12 rounded-2xl bg-black border border-white/25 flex items-center justify-center font-display font-black text-xl text-white shadow-[0_0_40px_rgba(255,255,255,0.12)]">
+      <div className="relative z-10 flex flex-col items-center justify-center gap-4">
+        <div className="w-11 h-11 bg-black border border-white/25 flex items-center justify-center font-display font-black text-lg text-white">
           N
         </div>
-
         <div className="overflow-hidden flex items-center gap-1 sm:gap-2">
           {BRAND_LETTERS.map((char, idx) => (
             <span
               key={idx}
-              className="inline-block font-display font-black text-5xl sm:text-7xl md:text-8xl tracking-tight text-white opacity-0 animate-letter-reveal"
-              style={{ animationDelay: `${idx * 65}ms` }}
+              className="inline-block font-display font-black text-4xl sm:text-7xl tracking-tight text-white opacity-0 animate-letter-reveal"
+              style={{ animationDelay: `${idx * 45}ms` }}
             >
               {char}
             </span>
           ))}
         </div>
-
-        <div className="text-[11px] sm:text-xs font-mono uppercase tracking-[0.28em] text-[#8CA8DB]">
+        <div className="text-[11px] font-mono-tech uppercase tracking-[0.26em] text-[#7EA2DB]">
           Software · Automatizaciones IA · Web
         </div>
       </div>
 
-      {/* Bottom Precision Progress Bar & Counter */}
-      <div className="relative z-10 max-w-md w-full mx-auto space-y-2.5">
-        <div className="flex items-center justify-between text-xs font-mono text-white/60">
+      <div className="relative z-10 max-w-md w-full mx-auto space-y-2">
+        <div className="flex items-center justify-between text-xs font-mono-tech text-white/60">
           <span>INICIANDO SISTEMA</span>
           <span className="text-white font-bold tabular-nums">
             {String(progress).padStart(3, "0")}%

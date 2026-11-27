@@ -5,10 +5,10 @@ import Image from "next/image";
 import gsap from "gsap";
 
 const MASCOT_QUOTES = [
-  "Flujos activos · 0 tareas manuales.",
-  "Respondiendo WhatsApp en 3 segundos.",
-  "Web lista en < 0.7s de carga.",
-  "Automatizando cotizaciones 24/7.",
+  "Flujos activos · 0 tareas manuales",
+  "WhatsApp IA responde en 3 seg",
+  "Webs con carga en < 0.7s",
+  "Cotizaciones automáticas 24/7",
 ];
 
 export function MascotHeroVisual() {
@@ -74,7 +74,7 @@ export function MascotHeroVisual() {
         if (e.key === "Enter" || e.key === " ") handlePulse();
       }}
       aria-label="Interactuar con N-01, la mascota de automatización de NoCode"
-      className="relative w-full aspect-square max-w-[520px] mx-auto flex items-center justify-center cursor-pointer select-none group"
+      className="relative w-full aspect-square max-w-[460px] mx-auto flex items-center justify-center cursor-pointer select-none group"
     >
       {/* Ambient Radial Aura */}
       <div
@@ -98,21 +98,21 @@ export function MascotHeroVisual() {
         className="pointer-events-none absolute inset-12 rounded-full border border-dashed border-[#7EA2DB]/20 animate-[spin_20s_linear_infinite_reverse]"
       />
 
-      {/* Floating 3D Mascot */}
+      {/* Floating 3D Mascot with explicit width/height for optimal LCP */}
       <div
         ref={mascotRef}
-        className="relative z-10 w-[82%] h-[82%] animate-float-slow will-change-transform"
+        className="relative z-10 w-[80%] h-[80%] animate-float-slow will-change-transform"
       >
         <div className="relative w-full h-full overflow-hidden rounded-full border border-[#F2F0EB]/15 shadow-[0_30px_80px_-20px_rgba(0,0,0,0.85)] bg-[#060D21]">
           <Image
             src="/images/nocode-mascot.jpg"
             alt="N-01, mascota 3D de automatización e ingeniería IA de NoCode"
-            fill
+            width={520}
+            height={520}
             priority
-            sizes="(max-width: 768px) 85vw, 440px"
-            className="object-cover scale-[1.06] transition-transform duration-700 ease-out group-hover:scale-[1.1]"
+            sizes="(max-width: 768px) 320px, 460px"
+            className="w-full h-full object-cover scale-[1.06] transition-transform duration-700 ease-out group-hover:scale-[1.1]"
           />
-          {/* Seamless edge vignette blending into #060D21 */}
           <div
             aria-hidden="true"
             className="pointer-events-none absolute inset-0"
@@ -125,14 +125,14 @@ export function MascotHeroVisual() {
       </div>
 
       {/* Top-Left Technical Tag */}
-      <div className="absolute top-3 left-2 sm:left-4 z-20 bg-black/85 backdrop-blur-md border border-[#F2F0EB]/20 px-3 py-1.5 font-mono-tech text-[10px] uppercase tracking-[0.18em] text-[#F2F0EB]">
+      <div className="absolute top-2 left-2 sm:left-4 z-20 bg-black/90 backdrop-blur-md border border-[#F2F0EB]/20 px-3 py-1.5 font-mono-tech text-[10px] uppercase tracking-[0.18em] text-[#F2F0EB]">
         <span className="inline-block w-1.5 h-1.5 bg-[#7EA2DB] mr-2 align-middle animate-pulse" />
         N-01 // AGENTE IA
       </div>
 
-      {/* Bottom Interactive Status Pill */}
-      <div className="absolute bottom-2 sm:bottom-4 inset-x-4 sm:inset-x-8 z-20 bg-black/90 backdrop-blur-md border border-[#F2F0EB]/25 px-4 py-2.5 flex items-center justify-between gap-3">
-        <span className="font-mono-tech text-[11px] text-[#F2F0EB] truncate">
+      {/* Bottom Interactive Status Bar (non-truncating on 375px) */}
+      <div className="absolute bottom-1 sm:bottom-3 inset-x-2 sm:inset-x-6 z-20 bg-black/92 backdrop-blur-md border border-[#F2F0EB]/25 px-3.5 py-2.5 flex items-center justify-between gap-2.5">
+        <span className="font-mono-tech text-[10px] sm:text-[11px] leading-snug text-[#F2F0EB]">
           {MASCOT_QUOTES[quoteIdx]}
         </span>
         <span className="font-mono-tech text-[10px] uppercase tracking-wider text-[#7EA2DB] shrink-0">

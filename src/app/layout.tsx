@@ -1,7 +1,26 @@
 import type { Metadata } from "next";
+import localFont from "next/font/local";
 import "./globals.css";
 
+const plusJakarta = localFont({
+  src: "./fonts/plus-jakarta-sans.woff2",
+  weight: "400 700",
+  display: "swap",
+  variable: "--font-jakarta",
+});
+
+const jetbrainsMono = localFont({
+  src: "./fonts/jetbrains-mono.woff2",
+  weight: "500 600",
+  display: "swap",
+  variable: "--font-jetbrains-mono",
+});
+
 export const metadata: Metadata = {
+  metadataBase: new URL("https://nocode.studio"),
+  alternates: {
+    canonical: "/",
+  },
   title: "NoCode — Ingeniería Web, Software a Medida y Automatización IA",
   description:
     "Estudio de ingeniería digital. Construimos páginas web de alta conversión, software a medida y sistemas de automatización con IA que operan 24/7.",
@@ -34,20 +53,11 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="anonymous"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&family=Outfit:wght@400;500;600;700&family=Unbounded:wght@600;700;800;900&display=swap"
-          rel="stylesheet"
-        />
-      </head>
-      <body className="selection:bg-black selection:text-white">
+    <html
+      lang="es"
+      className={`${plusJakarta.variable} ${jetbrainsMono.variable}`}
+    >
+      <body className="selection:bg-[#7EA2DB] selection:text-[#000000]">
         <div className="noise-overlay" aria-hidden="true" />
         {children}
       </body>

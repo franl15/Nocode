@@ -41,27 +41,27 @@ export function Navbar() {
 
   return (
     <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] ${
+      className={`fixed top-0 left-0 right-0 z-[95] transition-transform duration-500 ease-[cubic-bezier(0.19,1,0.22,1)] ${
         hidden ? "-translate-y-full" : "translate-y-0"
       } ${
         scrolled
-          ? "bg-[#060D21]/90 backdrop-blur-md border-b border-[#F2F0EB]/12"
+          ? "bg-[#000000]/92 backdrop-blur-md border-b border-[#F2F0EB]/15"
           : "bg-transparent border-b border-[#F2F0EB]/10"
       }`}
     >
-      <div className="max-w-[1400px] mx-auto px-5 sm:px-8 h-16 sm:h-20 flex items-center justify-between">
+      <div className="max-w-[1440px] mx-auto px-4 sm:px-8 h-16 sm:h-20 flex items-center justify-between gap-4">
         {/* Brand Wordmark */}
         <a
           href="#inicio"
-          className="flex items-center gap-3 text-[#F2F0EB] group"
+          className="flex items-center gap-2.5 sm:gap-3 text-[#F2F0EB] group shrink-0"
         >
-          <span className="w-8 h-8 bg-black border border-[#F2F0EB]/30 flex items-center justify-center font-display font-extrabold text-sm tracking-tighter transition-colors group-hover:bg-[#F2F0EB] group-hover:text-black">
+          <span className="w-8 h-8 bg-[#0A0A0D] border border-[#F2F0EB]/22 rounded-[8px] flex items-center justify-center font-display font-semibold text-sm tracking-tighter transition-colors group-hover:bg-[#F2F0EB] group-hover:text-[#000000]">
             N
           </span>
-          <span className="font-display font-extrabold text-lg tracking-tight uppercase">
+          <span className="font-display font-semibold text-base sm:text-lg tracking-tight uppercase">
             {SITE_CONFIG.brandName}
           </span>
-          <span className="hidden lg:inline-block font-mono-tech text-[10px] uppercase tracking-[0.2em] text-[#7EA2DB] border-l border-[#F2F0EB]/15 pl-3">
+          <span className="hidden xl:inline-block type-mono uppercase text-[#9AA8BF] border-l border-[#F2F0EB]/14 pl-3">
             Ingeniería Digital
           </span>
         </a>
@@ -69,55 +69,60 @@ export function Navbar() {
         {/* Desktop Nav */}
         <nav
           aria-label="Navegación principal"
-          className="hidden md:flex items-center gap-8 text-xs font-mono-tech uppercase tracking-[0.16em] text-[#F2F0EB]/80"
+          className="hidden lg:flex items-center gap-8 type-mono uppercase text-[#9AA8BF]"
         >
           {NAV_LINKS.map((item) => (
             <a
               key={item.href}
               href={item.href}
-              className="editorial-link hover:text-white transition-colors py-1"
+              className="editorial-link hover:text-[#F2F0EB] transition-colors py-1 whitespace-nowrap"
             >
               {item.label}
             </a>
           ))}
         </nav>
 
-        {/* Right CTA */}
-        <div className="flex items-center gap-3">
+        {/* Right Signature CTA + Mobile Menu */}
+        <div className="flex items-center gap-2.5 shrink-0">
           <MagneticButton
             href={waHref}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-2 bg-[#F2F0EB] hover:bg-black text-black hover:text-white border border-[#F2F0EB] px-4 sm:px-5 py-2.5 text-xs font-mono-tech font-semibold uppercase tracking-[0.14em] transition-colors duration-300"
+            className="inline-flex items-center gap-1.5 sm:gap-2 bg-[#F2F0EB] hover:bg-[#7EA2DB] text-[#000000] rounded-[8px] px-4 sm:px-5 py-2 sm:py-2.5 type-mono font-semibold uppercase transition-colors duration-300 whitespace-nowrap"
           >
-            <span>Iniciar proyecto</span>
-            <ArrowUpRight className="w-3.5 h-3.5" />
+            <span className="sm:hidden">Cotizar</span>
+            <span className="hidden sm:inline">Iniciar proyecto</span>
+            <ArrowUpRight className="w-3.5 h-3.5 shrink-0" />
           </MagneticButton>
 
           <button
             type="button"
             aria-label={mobileOpen ? "Cerrar menú" : "Abrir menú"}
+            aria-expanded={mobileOpen}
             onClick={() => setMobileOpen((v) => !v)}
-            className="md:hidden p-2 border border-[#F2F0EB]/20 text-[#F2F0EB]"
+            className="lg:hidden p-2 border border-[#F2F0EB]/22 rounded-[8px] text-[#F2F0EB] hover:bg-[#14141A] hover:border-[#7EA2DB] transition-colors cursor-pointer"
           >
             {mobileOpen ? <X className="w-4 h-4" /> : <Menu className="w-4 h-4" />}
           </button>
         </div>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* Mobile / Tablet Drawer */}
       {mobileOpen && (
-        <div className="md:hidden bg-[#030712] border-b border-[#F2F0EB]/15 px-5 py-6">
-          <nav className="flex flex-col gap-4 font-mono-tech text-xs uppercase tracking-[0.18em] text-[#F2F0EB]">
+        <div className="lg:hidden bg-[#030712] border-b border-[#F2F0EB]/14 px-5 py-6">
+          <nav
+            aria-label="Menú móvil"
+            className="flex flex-col gap-4 type-mono uppercase text-[#F2F0EB]"
+          >
             {NAV_LINKS.map((item) => (
               <a
                 key={item.href}
                 href={item.href}
                 onClick={() => setMobileOpen(false)}
-                className="py-2 border-b border-[#F2F0EB]/10 flex items-center justify-between"
+                className="py-2.5 border-b border-[#F2F0EB]/12 flex items-center justify-between hover:text-[#9AB8E8] transition-colors"
               >
                 <span>{item.label}</span>
-                <ArrowUpRight className="w-3.5 h-3.5 text-[#7EA2DB]" />
+                <ArrowUpRight className="w-3.5 h-3.5 text-[#9AA8BF]" />
               </a>
             ))}
           </nav>

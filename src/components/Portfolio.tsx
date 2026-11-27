@@ -1,163 +1,292 @@
-import { ArrowUpRight, Bot, Check, BarChart3, Globe } from "lucide-react";
+"use client";
 
-const PROJECTS = [
+import { useEffect, useRef, useState } from "react";
+import Image from "next/image";
+import { ArrowUpRight, Bot, Check, BarChart3, Globe } from "lucide-react";
+import {
+  DeviceShowcase3D,
+  type ShowcaseCapture,
+} from "@/components/DeviceShowcase3D";
+import { MascotN013D } from "@/components/MascotN013D";
+
+interface ProjectCase {
+  id: string;
+  category: "todos" | "ai" | "web" | "software";
+  badge: string;
+  title: string;
+  desc: string;
+  metric: string;
+  domain: string;
+  accessibleSummary: string;
+  kind: "ai" | "web" | "software";
+  desktopImage?: ShowcaseCapture;
+  mobileImage?: ShowcaseCapture;
+}
+
+const PROJECTS: ProjectCase[] = [
   {
-    badge: "Automatización IA · En producción",
+    id: "whatsapp-ia",
+    category: "ai",
+    badge: "AUTOMATIZACIÓN IA // EN PRODUCCIÓN",
     title: "Agente de WhatsApp + Agenda Automática",
-    desc: "Sistema conectado a WhatsApp Business, calendario y CRM que responde preguntas frecuentes, cotiza servicios y confirma citas sin intervención humana.",
+    desc: "Responde dudas, cotiza y confirma citas en Google Calendar sin intervención humana.",
     metric: "+38 citas agendadas / semana",
+    domain: "crm.nocode.studio/whatsapp-ia",
+    accessibleSummary:
+      "Vista en laptop y celular del agente de WhatsApp con IA activo 24/7, mostrando conversaciones automatizadas, confirmación de citas y sincronización en tiempo real con Google Calendar y CRM.",
     kind: "ai",
+    desktopImage: {
+      src: "/images/casos/caso-01-desktop.jpg",
+      width: 1408,
+      height: 768,
+      alt: "Consola operativa de escritorio del agente de WhatsApp con IA y agenda automática sincronizada con CRM",
+    },
   },
   {
-    badge: "Diseño Web · Alta Conversión",
+    id: "estudio-b2b",
+    category: "web",
+    badge: "DISEÑO WEB // ALTA CONVERSIÓN",
     title: "Landing & Catálogo de Autor para Estudio B2B",
-    desc: "Arquitectura enfocada en claridad inmediata, velocidad de carga sub-segundo y embudo directo hacia WhatsApp y formulario calificado.",
+    desc: "Velocidad sub-segundo (0.6s) y embudo directo hacia WhatsApp y formulario calificado.",
     metric: "3.2x más solicitudes calificadas",
+    domain: "atelier-vera.studio",
+    accessibleSummary:
+      "Vista en laptop y celular de la landing editorial B2B en Next.js con puntuación Lighthouse 99, tiempo de carga de 0.6 segundos y embudo directo hacia WhatsApp.",
     kind: "web",
+    desktopImage: {
+      src: "/images/casos/caso-02-desktop.jpg",
+      width: 1408,
+      height: 768,
+      alt: "Landing y catálogo editorial de escritorio para estudio de arquitectura B2B Atelier Vera",
+    },
   },
   {
-    badge: "Software a Medida · Dashboard",
+    id: "panel-operativo",
+    category: "software",
+    badge: "SOFTWARE A MEDIDA // DASHBOARD",
     title: "Panel Operativo y Cotizador en Tiempo Real",
-    desc: "Aplicación web interna que reemplazó 6 hojas de Excel: genera cotizaciones en PDF en 10 segundos y notifica automáticamente a ventas y finanzas.",
-    metric: "-45 horas manuales al mes",
+    desc: "Reemplazó 6 hojas de Excel: genera cotizaciones PDF en 10s y notifica a ventas.",
+    metric: "-42 horas manuales al mes",
+    domain: "app.operaciones-v2.co",
+    accessibleSummary:
+      "Vista en laptop y celular del panel operativo interno con 42 cotizaciones activas, 68.4 por ciento de aprobación y generación automática de PDF en 10 segundos.",
     kind: "software",
+    desktopImage: {
+      src: "/images/casos/caso-03-desktop.jpg",
+      width: 1408,
+      height: 768,
+      alt: "Dashboard operativo de escritorio y cotizador PDF en tiempo real con métricas comerciales",
+    },
   },
 ];
 
-function DeviceMockup({ kind }: { kind: string }) {
-  return (
-    <div className="relative pt-4 pb-8 px-2 sm:px-6">
-      {/* MacBook Frame */}
-      <div className="rounded-2xl bg-black p-2 sm:p-2.5 shadow-[0_24px_55px_-18px_rgba(6,13,33,0.5)] border border-white/10">
-        {/* Top bar */}
-        <div className="flex items-center gap-1.5 px-2 pb-2">
-          <span className="w-2 h-2 rounded-full bg-white/25" />
-          <span className="w-2 h-2 rounded-full bg-white/25" />
-          <span className="w-2 h-2 rounded-full bg-white/75" />
+const FILTERS = [
+  { key: "todos", label: "Todos" },
+  { key: "ai", label: "Automatización IA" },
+  { key: "web", label: "Diseño Web" },
+  { key: "software", label: "Software a Medida" },
+] as const;
+
+function DesktopFallbackScreen({ kind }: { kind: ProjectCase["kind"] }) {
+  if (kind === "ai") {
+    return (
+      <div className="p-5 sm:p-6 space-y-5 bg-[#000000] text-[#F2F0EB]">
+        <div className="flex items-center justify-between text-xs font-mono-tech border-b border-[#F2F0EB]/12 pb-3">
+          <span className="inline-flex items-center gap-1.5 font-semibold text-[#F2F0EB]">
+            <Bot className="w-4 h-4 text-[#7EA2DB]" /> FLUJO WHATSAPP IA
+          </span>
+          <span className="px-2 py-0.5 border border-[#7EA2DB]/45 bg-[#0A0A0D] text-[#7EA2DB] text-xs font-semibold">
+            ACTIVO 24/7
+          </span>
         </div>
-
-        {/* Screen Content */}
-        <div className="rounded-xl bg-[#060D21] text-[#F2F0EB] p-5 sm:p-6 min-h-[220px] sm:min-h-[250px] flex flex-col justify-between overflow-hidden relative">
-          {kind === "ai" && (
-            <>
-              <div className="flex items-center justify-between text-xs">
-                <span className="inline-flex items-center gap-1.5 font-semibold text-white">
-                  <Bot className="w-4 h-4" /> Flujo WhatsApp IA
-                </span>
-                <span className="px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-bold">
-                  ACTIVO 24/7
-                </span>
-              </div>
-              <div className="space-y-2.5 my-4">
-                <div className="max-w-[82%] rounded-2xl rounded-tl-sm bg-white/10 px-3.5 py-2 text-xs">
-                  Hola, ¿tienen disponibilidad mañana para una evaluación?
-                </div>
-                <div className="ml-auto max-w-[85%] rounded-2xl rounded-tr-sm bg-black text-white border border-white/20 px-3.5 py-2 text-xs font-medium">
-                  ¡Hola! Sí, tenemos 10:00 AM y 3:30 PM. ¿Te aparto el de las
-                  10:00 AM? Te envío el recordatorio por aquí.
-                </div>
-              </div>
-              <div className="flex items-center gap-2 text-[11px] text-white/65">
-                <Check className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Sincronizado con Google Calendar &amp; CRM</span>
-              </div>
-            </>
-          )}
-
-          {kind === "web" && (
-            <>
-              <div className="flex items-center justify-between text-xs border-b border-white/10 pb-3">
-                <span className="font-display font-bold flex items-center gap-1.5">
-                  <Globe className="w-3.5 h-3.5 text-[#8CA8DB]" /> estudio-pro.co
-                </span>
-                <span className="px-2.5 py-0.5 rounded-full bg-black text-white border border-white/25 text-[10px] font-bold">
-                  Cotizar →
-                </span>
-              </div>
-              <div className="my-4 space-y-2">
-                <div className="font-display font-extrabold text-xl sm:text-2xl leading-tight">
-                  Diseño arquitectónico que{" "}
-                  <span className="text-[#8CA8DB]">se vende solo.</span>
-                </div>
-                <div className="grid grid-cols-3 gap-2 pt-2">
-                  <div className="rounded-lg bg-black/50 border border-white/10 p-2 text-center">
-                    <div className="font-bold text-sm text-white">99</div>
-                    <div className="text-[10px] opacity-70">Lighthouse</div>
-                  </div>
-                  <div className="rounded-lg bg-black/50 border border-white/10 p-2 text-center">
-                    <div className="font-bold text-sm">0.6s</div>
-                    <div className="text-[10px] opacity-70">Carga</div>
-                  </div>
-                  <div className="rounded-lg bg-black/50 border border-white/10 p-2 text-center">
-                    <div className="font-bold text-sm text-emerald-300">+220%</div>
-                    <div className="text-[10px] opacity-70">Leads</div>
-                  </div>
-                </div>
-              </div>
-              <div className="text-[11px] text-white/60">
-                Next.js · Tailwind · Conversión directa a WhatsApp
-              </div>
-            </>
-          )}
-
-          {kind === "software" && (
-            <>
-              <div className="flex items-center justify-between text-xs">
-                <span className="inline-flex items-center gap-1.5 font-semibold text-white">
-                  <BarChart3 className="w-4 h-4" /> Panel Operativo v2
-                </span>
-                <span className="text-[10px] text-white/60 font-mono">LIVE</span>
-              </div>
-              <div className="grid grid-cols-3 gap-2 my-4">
-                <div className="rounded-xl bg-black/45 border border-white/10 p-3">
-                  <div className="text-[10px] text-white/60">Cotizaciones</div>
-                  <div className="font-display font-bold text-lg">128</div>
-                </div>
-                <div className="rounded-xl bg-black/45 border border-white/10 p-3">
-                  <div className="text-[10px] text-white/60">Aprobadas</div>
-                  <div className="font-display font-bold text-lg text-[#8CA8DB]">
-                    64%
-                  </div>
-                </div>
-                <div className="rounded-xl bg-black/45 border border-white/10 p-3">
-                  <div className="text-[10px] text-white/60">Tiempo avg</div>
-                  <div className="font-display font-bold text-lg text-emerald-300">
-                    10s
-                  </div>
-                </div>
-              </div>
-              <div className="space-y-1.5">
-                <div className="h-2 rounded-full bg-white/10 overflow-hidden">
-                  <div className="h-full w-4/5 rounded-full bg-white" />
-                </div>
-                <div className="text-[11px] text-white/65">
-                  PDF + envío automático por WhatsApp y correo
-                </div>
-              </div>
-            </>
-          )}
+        <div className="flex items-center gap-2 text-xs font-mono-tech text-[#9AA8BF]">
+          <Check className="w-3.5 h-3.5 text-[#7EA2DB]" />
+          <span>Sincronizado con Google Calendar &amp; CRM</span>
         </div>
       </div>
-
-      {/* Laptop Base Lip */}
-      <div className="mx-auto w-[92%] h-2.5 bg-[#121929] rounded-b-xl shadow-md" />
-
-      {/* Overlapping Context-Specific Floating Card */}
-      <div className="hidden sm:flex flex-col justify-between absolute -bottom-1 right-2 w-36 bg-[#F2F0EB] text-[#060D21] p-3 border-2 border-black shadow-xl animate-float-slow">
-        <div className="w-8 h-0.5 bg-black/30 mb-2" />
-        <div className="font-mono-tech text-[10px] font-bold uppercase text-black">
-          {kind === "ai"
-            ? "WHATSAPP 24/7"
-            : kind === "web"
-            ? "CARGA 0.6s"
-            : "PDF EN 10s"}
+    );
+  }
+  if (kind === "web") {
+    return (
+      <div className="p-5 sm:p-6 space-y-4 bg-[#000000] text-[#F2F0EB]">
+        <div className="flex items-center justify-between text-xs border-b border-[#F2F0EB]/12 pb-3 font-mono-tech">
+          <span className="font-semibold flex items-center gap-1.5 text-[#F2F0EB]">
+            <Globe className="w-3.5 h-3.5 text-[#7EA2DB]" /> estudio-pro.co
+          </span>
         </div>
-        <div className="text-[11px] font-bold leading-tight mt-1">
-          {kind === "ai"
-            ? "Respuesta en 3 seg sin intervención"
-            : kind === "web"
-            ? "Optimizada para cerrar desde móvil"
-            : "Sincronizado con ventas y finanzas"}
+      </div>
+    );
+  }
+  return (
+    <div className="p-5 sm:p-6 space-y-4 bg-[#000000] text-[#F2F0EB]">
+      <div className="flex items-center justify-between text-xs font-mono-tech border-b border-[#F2F0EB]/12 pb-3">
+        <span className="inline-flex items-center gap-1.5 font-semibold text-[#F2F0EB]">
+          <BarChart3 className="w-4 h-4 text-[#7EA2DB]" /> PANEL OPERATIVO V2
+        </span>
+      </div>
+    </div>
+  );
+}
+
+function MobileFallbackScreen({ kind }: { kind: ProjectCase["kind"] }) {
+  if (kind === "ai") {
+    return (
+      <div className="min-h-[290px] p-2.5 bg-[#0B0D14] text-[#F2F0EB] flex flex-col justify-between gap-2.5">
+        <div className="space-y-2">
+          <div className="flex items-center justify-between border-b border-[#F2F0EB]/10 pb-2">
+            <div className="flex items-center gap-1.5">
+              <span className="w-5 h-5 rounded-full bg-[#7EA2DB]/25 border border-[#7EA2DB]/50 flex items-center justify-center text-[8px] font-semibold text-[#F2F0EB]">
+                SN
+              </span>
+              <div>
+                <div className="text-[9px] font-semibold leading-none">Sofía N.</div>
+                <div className="text-[7px] text-[#34D399] flex items-center gap-1 mt-0.5">
+                  <span className="w-1 h-1 rounded-full bg-[#34D399]" /> IA 24/7
+                </div>
+              </div>
+            </div>
+            <span className="px-1.5 py-0.5 rounded-full bg-[#34D399]/15 border border-[#34D399]/40 text-[7px] text-[#34D399] font-mono-tech">
+              LIVE
+            </span>
+          </div>
+
+          <div className="bg-[#161B26] border border-[#F2F0EB]/10 rounded-[8px] p-1.5 text-[8px] leading-snug text-[#CBD4E3]">
+            Hola, quiero agendar demo mañana
+          </div>
+          <div className="ml-3 bg-gradient-to-br from-[#3B5998] to-[#5B84C4] rounded-[8px] p-1.5 text-[8px] leading-snug text-[#FFFFFF]">
+            ¡Claro! Tengo espacio a las 11:00 o 16:30
+          </div>
+          <div className="bg-[#121C18] border border-[#34D399]/45 rounded-[8px] p-2 space-y-1">
+            <div className="flex items-center justify-between text-[8px] font-semibold text-[#34D399]">
+              <span>Cita confirmada</span>
+              <span>11:00</span>
+            </div>
+            <div className="text-[7px] text-[#CBD4E3]">
+              Google Calendar · Sync CRM
+            </div>
+          </div>
+        </div>
+
+        <div className="rounded-[8px] bg-[#12151E] border border-[#F2F0EB]/10 p-2">
+          <div className="flex items-baseline justify-between">
+            <span className="text-[11px] font-semibold text-[#F2F0EB]">94%</span>
+            <span className="text-[7px] text-[#9AA8BF]">Conversión</span>
+          </div>
+          <svg viewBox="0 0 100 24" className="w-full h-5 mt-1" aria-hidden="true">
+            <path
+              d="M2 20 C18 18, 26 8, 42 12 C56 16, 68 4, 82 9 C90 12, 95 6, 98 3"
+              fill="none"
+              stroke="#34D399"
+              strokeWidth="2.2"
+              strokeLinecap="round"
+            />
+          </svg>
+        </div>
+      </div>
+    );
+  }
+
+  if (kind === "web") {
+    return (
+      <div className="min-h-[290px] bg-[#0B0D12] text-[#F2F0EB] flex flex-col">
+        <div className="relative h-40 w-full overflow-hidden">
+          <Image
+            src="/images/casos/caso-02-desktop.jpg"
+            alt="Vista móvil de Atelier Vera"
+            fill
+            sizes="150px"
+            className="object-cover object-[86%_35%] scale-110"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#0B0D12] via-[#0B0D12]/35 to-[#0B0D12]/40" />
+          <div className="relative z-10 p-2.5 h-full flex flex-col justify-between">
+            <div className="flex items-center justify-between text-[7px] tracking-widest text-[#F2F0EB]/90 font-semibold">
+              <span>ATELIER VERA</span>
+              <span>MENU</span>
+            </div>
+            <div className="space-y-1.5">
+              <div className="text-[11px] font-semibold leading-tight tracking-tight">
+                SCULPTING SILENCE
+              </div>
+              <span className="inline-block bg-[#F2F0EB] text-[#000000] text-[7px] font-semibold px-2 py-0.5 rounded-full">
+                EXPLORE WORK
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div className="p-2.5 space-y-1.5 flex-1 bg-[#0B0D12]">
+          <div className="rounded-[6px] bg-[#141720] border border-[#F2F0EB]/12 p-2 flex items-center justify-between">
+            <div>
+              <div className="text-[7px] text-[#9AA8BF] font-mono-tech">01</div>
+              <div className="text-[8px] font-semibold">VILLA SOLIS</div>
+            </div>
+            <span className="text-[7px] text-[#7EA2DB]">0.6s</span>
+          </div>
+          <div className="rounded-[6px] bg-[#141720] border border-[#F2F0EB]/12 p-2 flex items-center justify-between">
+            <div>
+              <div className="text-[7px] text-[#9AA8BF] font-mono-tech">02</div>
+              <div className="text-[8px] font-semibold">PAVILION K</div>
+            </div>
+            <span className="text-[7px] text-[#7EA2DB]">99</span>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-[290px] p-2.5 bg-[#090B10] text-[#F2F0EB] flex flex-col justify-between gap-2">
+      <div className="space-y-2">
+        <div className="flex items-center justify-between">
+          <span className="text-[8px] font-semibold text-[#CBD4E3]">Overview</span>
+          <span className="px-1.5 py-0.5 rounded-[4px] bg-[#7EA2DB]/20 border border-[#7EA2DB]/45 text-[7px] text-[#9AB8E8]">
+            + Quote
+          </span>
+        </div>
+
+        <div className="rounded-[8px] bg-[#12151E] border border-[#F2F0EB]/10 p-2 space-y-1">
+          <div className="flex items-center justify-between">
+            <span className="text-[7px] text-[#9AA8BF]">Revenue</span>
+            <span className="text-[7px] text-[#34D399] font-semibold">+18.4%</span>
+          </div>
+          <div className="text-[13px] font-semibold tracking-tight">$284,500</div>
+          <svg viewBox="0 0 100 32" className="w-full h-8" aria-hidden="true">
+            <defs>
+              <linearGradient id="mobAreaGrad" x1="0" y1="0" x2="0" y2="1">
+                <stop offset="0%" stopColor="#67E8F9" stopOpacity="0.45" />
+                <stop offset="100%" stopColor="#67E8F9" stopOpacity="0" />
+              </linearGradient>
+            </defs>
+            <path
+              d="M0 28 C18 22, 32 24, 48 16 C64 9, 80 11, 100 3 L100 32 L0 32 Z"
+              fill="url(#mobAreaGrad)"
+            />
+            <path
+              d="M0 28 C18 22, 32 24, 48 16 C64 9, 80 11, 100 3"
+              fill="none"
+              stroke="#67E8F9"
+              strokeWidth="2"
+              strokeLinecap="round"
+            />
+          </svg>
+        </div>
+
+        <div className="space-y-1">
+          {[
+            { name: "Grupo Norte", amt: "$18.4k", status: "Approved", cls: "bg-[#34D399]/20 text-[#34D399]" },
+            { name: "Studio K", amt: "$42.0k", status: "Review", cls: "bg-[#7EA2DB]/20 text-[#9AB8E8]" },
+            { name: "Clínica Sur", amt: "$9.6k", status: "Sent", cls: "bg-[#38BDF8]/20 text-[#7DD3FC]" },
+          ].map((row) => (
+            <div
+              key={row.name}
+              className="rounded-[6px] bg-[#12151E] border border-[#F2F0EB]/8 px-2 py-1.5 flex items-center justify-between text-[7px]"
+            >
+              <span className="text-[#CBD4E3] font-medium truncate">{row.name}</span>
+              <span className={`px-1.5 py-0.5 rounded-full font-semibold ${row.cls}`}>
+                {row.status}
+              </span>
+            </div>
+          ))}
         </div>
       </div>
     </div>
@@ -165,64 +294,218 @@ function DeviceMockup({ kind }: { kind: string }) {
 }
 
 export function Portfolio() {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [activeFilter, setActiveFilter] = useState<
+    "todos" | "ai" | "web" | "software"
+  >("todos");
+
+  const visibleProjects =
+    activeFilter === "todos"
+      ? PROJECTS
+      : PROJECTS.filter((p) => p.category === activeFilter);
+
+  // Transiciones Awwwards-style (perspectiva 3D + clip-path reveal con GSAP ScrollTrigger bajo demanda, solo escritorio)
+  useEffect(() => {
+    const isDesktop = window.matchMedia("(min-width: 1024px)").matches;
+    const reduced = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (!isDesktop || reduced) return;
+
+    const section = sectionRef.current;
+    if (!section) return;
+
+    let cancelled = false;
+    let revert: (() => void) | undefined;
+
+    const io = new IntersectionObserver(
+      (entries) => {
+        if (!entries[0]?.isIntersecting) return;
+        io.disconnect();
+
+        void Promise.all([
+          import("gsap"),
+          import("gsap/ScrollTrigger"),
+        ]).then(([{ default: gsap }, { ScrollTrigger }]) => {
+          if (cancelled || !sectionRef.current) return;
+          gsap.registerPlugin(ScrollTrigger);
+
+          const ctx = gsap.context(() => {
+            const rows = gsap.utils.toArray<HTMLElement>(".portfolio-case-row");
+            rows.forEach((row) => {
+              const media = row.querySelector<HTMLElement>(".portfolio-case-media");
+              const copy = row.querySelector<HTMLElement>(".portfolio-case-copy");
+
+              if (media) {
+                gsap.fromTo(
+                  media,
+                  {
+                    y: 44,
+                    scale: 0.94,
+                    opacity: 0.25,
+                    clipPath: "inset(8% 0% 8% 0% round 12px)",
+                  },
+                  {
+                    y: 0,
+                    scale: 1,
+                    opacity: 1,
+                    clipPath: "inset(0% 0% 0% 0% round 0px)",
+                    duration: 1.05,
+                    ease: "power3.out",
+                    scrollTrigger: {
+                      trigger: row,
+                      start: "top 84%",
+                      end: "top 38%",
+                      scrub: 0.55,
+                    },
+                  }
+                );
+              }
+
+              if (copy) {
+                gsap.fromTo(
+                  copy,
+                  { y: 32, opacity: 0.2 },
+                  {
+                    y: 0,
+                    opacity: 1,
+                    duration: 0.85,
+                    ease: "power3.out",
+                    scrollTrigger: {
+                      trigger: row,
+                      start: "top 82%",
+                      end: "top 44%",
+                      scrub: 0.45,
+                    },
+                  }
+                );
+              }
+            });
+          }, sectionRef);
+
+          revert = () => ctx.revert();
+        });
+      },
+      { rootMargin: "240px 0px 240px 0px" }
+    );
+
+    io.observe(section);
+
+    return () => {
+      cancelled = true;
+      io.disconnect();
+      revert?.();
+    };
+  }, [activeFilter]);
+
   return (
     <section
+      ref={sectionRef}
       id="proyectos"
-      className="bg-[#E5E9F2] text-[#060D21] py-24 sm:py-32 px-5 sm:px-8"
+      className="relative overflow-x-clip bg-[#000000] text-[#F2F0EB] py-24 sm:py-32 px-5 sm:px-8 border-b border-[#F2F0EB]/12"
     >
-      <div className="max-w-6xl mx-auto space-y-16">
-        {/* Header */}
-        <div className="max-w-2xl space-y-3">
-          <span className="font-mono-tech text-[11px] uppercase tracking-[0.22em] text-[#475575] block">
-            03 // CASOS Y DEMOS
-          </span>
-          <h2 className="font-display font-extrabold text-3xl sm:text-5xl tracking-[-0.03em]">
-            Sistemas reales, resultados medibles.
-          </h2>
-          <p className="text-base sm:text-lg text-[#475575]">
-            Cada proyecto combina diseño limpio, velocidad técnica y automatización
-            pensada para vender y ahorrar horas.
-          </p>
+      <div className="max-w-[1440px] mx-auto space-y-16">
+        {/* Header + Filter Pills (estilo dark.design, botones redondeados 8px) */}
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+          <div className="max-w-2xl space-y-3">
+            <span className="type-mono uppercase text-[#9AA8BF] block">
+              05 // CASOS Y DESARROLLOS
+            </span>
+            <h2 className="type-h2 text-[#F2F0EB]">
+              Sistemas reales, resultados medibles.
+            </h2>
+            <p className="type-body text-[#CBD4E3]">
+              Cada proyecto combina diseño limpio, velocidad técnica y automatización
+              pensada para vender y ahorrar horas.
+            </p>
+          </div>
+
+          <div className="flex flex-col lg:items-end gap-4">
+            <div className="hidden lg:flex items-center gap-3">
+              <div className="text-right">
+                <div className="type-mono uppercase text-[#7EA2DB]">
+                  N-01 // SHOWCASE
+                </div>
+                <div className="text-xs text-[#9AA8BF]">
+                  Sistemas en producción
+                </div>
+              </div>
+              <MascotN013D
+                pose="presenting"
+                size={120}
+                label="N-01 en 3D presentando los desarrollos"
+              />
+            </div>
+
+            <div className="inline-flex flex-wrap items-center gap-2">
+              {FILTERS.map((f) => {
+                const active = activeFilter === f.key;
+                return (
+                  <button
+                    key={f.key}
+                    type="button"
+                    onClick={() => setActiveFilter(f.key)}
+                    className={`px-4 py-2 type-mono uppercase rounded-[8px] border transition-all duration-300 cursor-pointer ${
+                      active
+                        ? "bg-[#F2F0EB] text-[#000000] border-[#F2F0EB] font-semibold"
+                        : "bg-[#0A0A0D] text-[#9AA8BF] border-[#F2F0EB]/16 hover:border-[#7EA2DB] hover:text-[#F2F0EB]"
+                    }`}
+                  >
+                    {f.label}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
         </div>
 
-        {/* Alternating Showcase Rows */}
-        <div className="space-y-20">
-          {PROJECTS.map((project, idx) => {
+        {/* Case Study Rows con transiciones 3D + clip-path reveal */}
+        <div className="relative z-10 space-y-24">
+          {visibleProjects.map((project, idx) => {
             const reversed = idx % 2 === 1;
             return (
               <div
-                key={project.title}
-                className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center"
+                key={project.id}
+                className="portfolio-case-row grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center pt-12 border-t border-[#F2F0EB]/14 first:border-t-0 first:pt-0"
               >
                 <div
-                  className={`lg:col-span-7 ${reversed ? "lg:order-2" : "lg:order-1"}`}
+                  className={`portfolio-case-media lg:col-span-7 ${
+                    reversed ? "lg:order-2" : "lg:order-1"
+                  }`}
                 >
-                  <DeviceMockup kind={project.kind} />
+                  <DeviceShowcase3D
+                    title={project.title}
+                    accessibleSummary={project.accessibleSummary}
+                    orientation={reversed ? "right" : "left"}
+                    domainLabel={project.domain}
+                    desktopImage={project.desktopImage}
+                    mobileImage={project.mobileImage}
+                    desktopFallback={<DesktopFallbackScreen kind={project.kind} />}
+                    mobileFallback={<MobileFallbackScreen kind={project.kind} />}
+                  />
                 </div>
 
                 <div
-                  className={`lg:col-span-5 space-y-4 ${
+                  className={`portfolio-case-copy lg:col-span-5 space-y-5 ${
                     reversed ? "lg:order-1" : "lg:order-2"
                   }`}
                 >
-                  <span className="inline-block rounded-full bg-white border border-[#060D21]/12 px-3.5 py-1 text-xs font-semibold text-[#060D21]">
+                  <span className="inline-block bg-[#0A0A0D] border border-[#F2F0EB]/16 rounded-[8px] px-3.5 py-1.5 type-mono uppercase font-medium text-[#9AA8BF]">
                     {project.badge}
                   </span>
-                  <h3 className="font-display font-extrabold text-2xl sm:text-3xl tracking-tight leading-tight">
+                  <h3 className="type-h3 text-[#F2F0EB]">
                     {project.title}
                   </h3>
-                  <p className="text-sm sm:text-base text-[#475575] leading-relaxed">
+                  <p className="type-body text-[#CBD4E3]">
                     {project.desc}
                   </p>
-                  <div className="text-sm font-bold text-black">
+                  <div className="type-mono uppercase font-semibold text-[#7EA2DB]">
                     {project.metric}
                   </div>
                   <div className="pt-2">
                     <a
                       href="#contacto"
-                      className="inline-flex items-center gap-2 rounded-full bg-black hover:bg-[#060D21] text-white px-5 py-2.5 text-xs sm:text-sm font-semibold transition-colors"
+                      className="inline-flex items-center gap-2.5 bg-[#F2F0EB] hover:bg-[#7EA2DB] text-[#000000] rounded-[8px] px-6 py-3 type-mono uppercase font-semibold transition-colors duration-300"
                     >
-                      <span>Quiero algo así para mi negocio</span>
+                      <span>Quiero algo así</span>
                       <ArrowUpRight className="w-4 h-4" />
                     </a>
                   </div>
